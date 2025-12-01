@@ -118,7 +118,6 @@ public class SummaryActivity extends AppCompatActivity {
         buttonFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         queryFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-        // Default: current month
         setMonthPreset();
 
 
@@ -156,13 +155,11 @@ public class SummaryActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Start with both hidden
         listSummary.setVisibility(android.view.View.GONE);
         listExpenses.setVisibility(android.view.View.GONE);
         layoutSearch.setVisibility(android.view.View.GONE);
     }
 
-    // ---------------- Date helpers ----------------
 
     private void showDatePicker(boolean isFrom) {
         Calendar c = isFrom ? fromCal : toCal;
@@ -226,7 +223,6 @@ public class SummaryActivity extends AppCompatActivity {
         updateDateButtons();
     }
 
-    // ---------------- Toggles ----------------
 
     private void toggleSummary() {
         if (isSummaryVisible) {
@@ -267,7 +263,6 @@ public class SummaryActivity extends AppCompatActivity {
     }
 
 
-    // ---------------- Summary loading ----------------
 
     private void loadSummaryForCurrentRange() {
         String start = getFromDateString();
@@ -295,7 +290,6 @@ public class SummaryActivity extends AppCompatActivity {
         listSummary.setAdapter(summaryAdapter);
     }
 
-    // ---------------- Expenses loading + search ----------------
 
     private void loadExpensesForCurrentRange() {
         String start = getFromDateString();
@@ -356,8 +350,6 @@ public class SummaryActivity extends AppCompatActivity {
         listExpenses.setAdapter(expensesAdapter);
     }
 
-
-    // ---------------- CSV Export (all expenses) ----------------
 
     private void exportCSV() {
         try {

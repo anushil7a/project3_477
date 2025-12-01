@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Total spending for the selected day -->
     <TextView
         android:id="@+id/textTotalLabel"
         android:layout_width="wrap_content"
@@ -22,7 +21,6 @@
         android:textStyle="bold"
         android:layout_marginBottom="12dp" />
 
-    <!-- Date selector -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +57,6 @@
 
     </LinearLayout>
 
-    <!-- Recent transactions list -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -73,7 +70,6 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Bottom buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

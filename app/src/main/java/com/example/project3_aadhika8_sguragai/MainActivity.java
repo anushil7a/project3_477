@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             Expense selected = expenses.get(position);
-            showExpensePopup(selected);  // edit mode
+            showExpensePopup(selected);  
         });
 
         calendar = Calendar.getInstance();
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         double total = expenseDao.getTotalForDay(day);
         textTotalAmount.setText(String.format(Locale.getDefault(), "$%.2f", total));
 
-        expenses = expenseDao.getExpensesForDay(day);   // store for clicking
+        expenses = expenseDao.getExpensesForDay(day);   
 
         transactionStrings = new ArrayList<>();
 
@@ -161,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
         Spinner dialogCategory = view.findViewById(R.id.dialogCategory);
         Button dialogDateButton = view.findViewById(R.id.dialogDateButton);
 
-        // setup categories
         ExpenseCategory[] cats = ExpenseCategory.values();
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
                 this,
@@ -171,14 +170,12 @@ public class MainActivity extends AppCompatActivity {
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dialogCategory.setAdapter(catAdapter);
 
-        // ---------- DATE HANDLING ----------
         Calendar tempCal = Calendar.getInstance();
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        String currentDate = getSelectedDateString(); // default to home screen date
+        String currentDate = getSelectedDateString(); 
 
         if (expenseToEdit != null) {
-            // parse existing date into calendar
             try {
                 tempCal.setTime(sdf.parse(expenseToEdit.date));
             } catch (Exception ignored) {}
@@ -188,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception ignored) {}
         }
 
-        // show chosen date on button
         dialogDateButton.setText(sdf.format(tempCal.getTime()));
 
         dialogDateButton.setOnClickListener(v -> {
@@ -207,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
             dp.show();
         });
 
-        // ---------- EDIT MODE ----------
         if (expenseToEdit != null) {
             dialogTitle.setText(expenseToEdit.title);
             dialogAmount.setText(String.valueOf(expenseToEdit.amount));
@@ -215,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
             dialogCategory.setSelection(expenseToEdit.category.ordinal());
         }
 
-        // ---------- SAVE BUTTON ----------
         builder.setPositiveButton("Save", (dialog, which) -> {
 
             String title = dialogTitle.getText().toString().trim();
@@ -255,10 +249,8 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", null);
 
-        // DELETE (only in edit mode)
         if (expenseToEdit != null) {
             builder.setNeutralButton("Delete", (d, w) -> {
-                // Ask for confirmation
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Confirm Delete")
                         .setMessage("Are you sure you want to delete this expense?")

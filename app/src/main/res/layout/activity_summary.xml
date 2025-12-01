@@ -5,14 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Back button -->
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Back to Home" />
 
-    <!-- From / To row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,7 +33,6 @@
             android:layout_marginStart="4dp" />
     </LinearLayout>
 
-    <!-- Week / Month / Year / All Time row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,7 +79,6 @@
         android:textStyle="bold"
         android:textSize="20sp" />
 
-    <!-- Show Summary toggle -->
     <Button
         android:id="@+id/buttonShowSummary"
         android:layout_width="match_parent"
@@ -90,7 +86,6 @@
         android:text="Show Summary"
         android:layout_marginTop="8dp" />
 
-    <!-- Show Expenses toggle -->
     <Button
         android:id="@+id/buttonShowExpenses"
         android:layout_width="match_parent"
@@ -98,7 +93,6 @@
         android:text="Show All Expenses"
         android:layout_marginTop="4dp" />
 
-    <!-- Search row (for expenses, hidden initially) -->
     <LinearLayout
         android:id="@+id/layoutSearch"
         android:layout_width="match_parent"
@@ -122,7 +116,6 @@
             android:layout_marginStart="4dp" />
     </LinearLayout>
 
-    <!-- Category summary list (hidden until Show Summary) -->
     <ListView
         android:id="@+id/listSummary"
         android:layout_width="match_parent"
@@ -130,7 +123,6 @@
         android:layout_marginTop="8dp"
         android:visibility="gone" />
 
-    <!-- All expenses list (hidden until Show Expenses) -->
     <ListView
         android:id="@+id/listExpenses"
         android:layout_width="match_parent"
@@ -139,7 +131,6 @@
         android:layout_marginTop="8dp"
         android:visibility="gone" />
 
-    <!-- Optional: keep export + view CSV at bottom -->
     <Button
         android:id="@+id/buttonExportCSV"
         android:layout_width="match_parent"

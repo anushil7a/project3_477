@@ -38,7 +38,6 @@ public class CsvPreviewActivity extends AppCompatActivity {
 
         StringBuilder sb = new StringBuilder();
 
-        // Header
         sb.append("Title,Amount,Category,Date,Note\n");
 
         for (Expense e : allExpenses) {

@@ -34,7 +34,6 @@ public abstract class AppDatabase extends RoomDatabase {
         return instance;
     }
 
-    // Pre-populated sample data
     private static RoomDatabase.Callback seedData = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {

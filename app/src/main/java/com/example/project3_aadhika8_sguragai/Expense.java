@@ -17,7 +17,7 @@ public class Expense {
 
     public double amount;
 
-    public ExpenseCategory category;  // ENUM now
+    public ExpenseCategory category; 
     public String title;
 
     public String date;   // yyyy-MM-dd
