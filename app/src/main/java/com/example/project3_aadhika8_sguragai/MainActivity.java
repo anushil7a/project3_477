@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         badgeTwoDaysAgo = findViewById(R.id.badgeTwoDaysAgo);
 
 
-
         listTransactions.setOnItemClickListener((parent, view, position, id) -> {
             if (expenses == null || position < 0 || position >= expenses.size()) {
                 return;

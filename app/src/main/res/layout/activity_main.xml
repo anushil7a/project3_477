@@ -6,11 +6,26 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/textBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Budget Buddy"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:background="#228B22"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
         android:id="@+id/textTotalLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Total Spending:"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="#228B22"
+        android:layout_marginBottom="4dp"/>
 
     <TextView
         android:id="@+id/textTotalAmount"
@@ -19,7 +34,9 @@
         android:text="$0.00"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textColor="#228B22"
         android:layout_marginBottom="12dp" />
+
     <LinearLayout
         android:id="@+id/layoutBadges"
         android:layout_width="match_parent"
@@ -28,7 +45,6 @@
         android:layout_marginTop="12dp"
         android:gravity="center_vertical">
 
-        <!-- Example badge for today -->
         <ImageView
             android:id="@+id/badgeToday"
             android:layout_width="48dp"
@@ -36,7 +52,6 @@
             android:src="@drawable/locked"
             android:layout_marginEnd="8dp" />
 
-        <!-- Additional badges for past days (optional) -->
         <ImageView
             android:id="@+id/badgeYesterday"
             android:layout_width="48dp"
@@ -51,40 +66,41 @@
             android:src="@drawable/locked" />
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginBottom="12dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/buttonPrevDay"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_weight="1"
+            android:text="Prev"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
 
-            <Button
-                android:id="@+id/buttonPrevDay"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Prev" />
+        <Button
+            android:id="@+id/buttonSelectDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Select Date"
+            android:backgroundTint="#083A08"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
 
-            <Button
-                android:id="@+id/buttonSelectDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="Select Date" />
-
-            <Button
-                android:id="@+id/buttonNextDay"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Next" />
-        </LinearLayout>
-
+        <Button
+            android:id="@+id/buttonNextDay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Next"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <TextView
@@ -92,6 +108,7 @@
         android:layout_height="wrap_content"
         android:text="Recent Transactions"
         android:textSize="16sp"
+        android:textColor="#228B22"
         android:layout_marginBottom="4dp" />
 
     <ListView
@@ -112,7 +129,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="View Summary" />
+            android:text="View Summary"
+            android:backgroundTint="#083A08"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/buttonAddExpense"
@@ -120,7 +139,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Add Expense" />
+            android:text="Add Expense"
+            android:backgroundTint="#083A08"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
 </LinearLayout>

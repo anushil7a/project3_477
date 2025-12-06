@@ -5,11 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/textBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Budget Buddy"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:background="#228B22"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
     <Button
         android:id="@+id/buttonBackFromCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Back to Summary" />
+        android:text="Back to Summary"
+        android:backgroundTint="#083A08"/>
 
     <TextView
         android:id="@+id/textCategoryTitle"

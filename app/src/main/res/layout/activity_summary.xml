@@ -5,11 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/textBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Budget Buddy"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:background="#228B22"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
     <Button
         android:id="@+id/buttonBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Back to Home" />
+        android:text="Back to Home"
+        android:backgroundTint="#083A08"
+        android:textColor="#FFFFFF"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +37,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="From" />
+            android:text="From"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/buttonToDate"
@@ -30,7 +47,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="To"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <LinearLayout
@@ -44,7 +63,9 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Week" />
+            android:text="Week"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/buttonPresetMonth"
@@ -52,7 +73,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Month"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/buttonPresetYear"
@@ -60,7 +83,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Year"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
 
         <Button
             android:id="@+id/buttonPresetAllTime"
@@ -68,8 +93,11 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="All time"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#083A08"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
+
     <TextView
         android:id="@+id/textTotalRange"
         android:layout_width="match_parent"
@@ -77,7 +105,8 @@
         android:layout_marginTop="8dp"
         android:text="Total spent for the selected dates: $0.00"
         android:textStyle="bold"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textColor="#228B22"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -97,8 +126,9 @@
             android:id="@+id/buttonSetBudget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Set" />
-
+            android:text="Set"
+            android:backgroundTint="#228B22"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <TextView
@@ -109,6 +139,7 @@
         android:text="Remaining Budget: $0.00"
         android:textStyle="bold"
         android:textSize="18sp"
+        android:textColor="#083A08"
         android:visibility="gone"/>
 
     <TextView
@@ -119,6 +150,7 @@
         android:text="Highest Spending Category: None"
         android:textStyle="bold"
         android:textSize="18sp"
+        android:textColor="#083A08"
         android:visibility="gone"/>
 
     <Button
@@ -126,14 +158,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show Summary"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#083A08"
+        android:textColor="#FFFFFF"/>
 
     <Button
         android:id="@+id/buttonShowExpenses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Show All Expenses"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:backgroundTint="#083A08"
+        android:textColor="#FFFFFF"/>
 
     <LinearLayout
         android:id="@+id/layoutSearch"
@@ -155,7 +191,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Search"
-            android:layout_marginStart="4dp" />
+            android:layout_marginStart="4dp"
+            android:backgroundTint="#083A08"
+            android:textColor="#FFFFFF"/>
     </LinearLayout>
 
     <ListView
@@ -164,6 +202,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:visibility="gone" />
+
     <Spinner
         android:id="@+id/spinnerSort"
         android:layout_width="match_parent"
@@ -184,13 +223,17 @@
         android:id="@+id/buttonExportCSV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Export All to CSV" />
+        android:text="Export All to CSV"
+        android:backgroundTint="#083A08"
+        android:textColor="#FFFFFF"/>
 
     <Button
         android:id="@+id/buttonViewCSV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="View CSV"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:backgroundTint="#083A08"
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>
