@@ -79,6 +79,28 @@
         android:textStyle="bold"
         android:textSize="20sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/editMonthlyBudget"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:hint="Set Monthly Budget" />
+
+        <Button
+            android:id="@+id/buttonSetBudget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/textRemainingBudget"
         android:layout_width="match_parent"
@@ -89,6 +111,15 @@
         android:textSize="18sp"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/textHighestCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Highest Spending Category: None"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/buttonShowSummary"

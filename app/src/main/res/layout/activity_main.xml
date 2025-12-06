@@ -20,7 +20,37 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginBottom="12dp" />
+    <LinearLayout
+        android:id="@+id/layoutBadges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical">
 
+        <!-- Example badge for today -->
+        <ImageView
+            android:id="@+id/badgeToday"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/locked"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Additional badges for past days (optional) -->
+        <ImageView
+            android:id="@+id/badgeYesterday"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/locked"
+            android:layout_marginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/badgeTwoDaysAgo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/locked" />
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

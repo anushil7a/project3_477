@@ -46,9 +46,12 @@ public class SummaryActivity extends AppCompatActivity {
     private TextView textTotalRange;
     private TextView textRemainingBudget;
     private SharedPreferences prefs;
+    private TextView textHighestCategory;
     private LinearLayout layoutSearch;
     private EditText editSearch;
     private Button buttonSearch;
+    private EditText editMonthlyBudget;
+    private Button buttonSetBudget;
 
     private ListView listSummary;
     private ListView listExpenses;
@@ -98,7 +101,11 @@ public class SummaryActivity extends AppCompatActivity {
         listSummary = findViewById(R.id.listSummary);
         listExpenses = findViewById(R.id.listExpenses);
 
+        editMonthlyBudget = findViewById(R.id.editMonthlyBudget);
+        buttonSetBudget = findViewById(R.id.buttonSetBudget);
+
         textRemainingBudget = findViewById(R.id.textRemainingBudget);
+        textHighestCategory = findViewById(R.id.textHighestCategory);
         prefs = getSharedPreferences("BudgetPrefs", MODE_PRIVATE);
 
         spinnerSort = findViewById(R.id.spinnerSort);
@@ -130,6 +137,23 @@ public class SummaryActivity extends AppCompatActivity {
             intent.putExtra(CategoryExpensesActivity.EXTRA_END_DATE, end);
 
             startActivity(intent);
+        });
+
+        buttonSetBudget.setOnClickListener(v -> {
+            String input = editMonthlyBudget.getText().toString().trim();
+            if (input.isEmpty()) {
+                Toast.makeText(SummaryActivity.this, "Enter a budget amount", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                float budget = Float.parseFloat(input);
+                prefs.edit().putFloat("monthly_budget", budget).apply();
+                Toast.makeText(SummaryActivity.this, "Monthly budget set to $" + String.format(Locale.getDefault(), "%.2f", budget), Toast.LENGTH_SHORT).show();
+                updateBudgetWarning(); // update remaining budget immediately
+            } catch (NumberFormatException e) {
+                Toast.makeText(SummaryActivity.this, "Invalid number format", Toast.LENGTH_SHORT).show();
+            }
         });
 
 
@@ -323,6 +347,20 @@ public class SummaryActivity extends AppCompatActivity {
 
         expensesInRange = expenseDao.getExpensesInRange(start, end);
 
+        String sortChoice = spinnerSort.getSelectedItem().toString();
+
+        if (sortChoice.equals("Date")) {
+            expensesInRange.sort((a, b) -> a.date.compareTo(b.date));
+        } else if (sortChoice.equals("Amount")) {
+            expensesInRange.sort((a, b) -> Double.compare(a.amount, b.amount));
+        } else if (sortChoice.equals("Category")) {
+            expensesInRange.sort((a, b) -> {
+                String c1 = (a.category == null ? "" : a.category.name());
+                String c2 = (b.category == null ? "" : b.category.name());
+                return c1.compareTo(c2);
+            });
+        }
+
         expenseLines = new ArrayList<>();
         for (Expense e : expensesInRange) {
             String line = e.date + " - " + e.title + " - $" +
@@ -416,12 +454,17 @@ public class SummaryActivity extends AppCompatActivity {
         }
     }
     private void refreshVisibleSections() {
+        String start = getFromDateString();
+        String end = getToDateString();
+
         if (isSummaryVisible) {
             loadSummaryForCurrentRange();
+            updateHighestCategory(start, end);
         }
         if (isExpensesVisible) {
             loadExpensesForCurrentRange();
         }
+        updateBudgetWarning();
     }
     private void updateBudgetWarning() {
         float budget = prefs.getFloat("monthly_budget", 0);
@@ -441,6 +484,29 @@ public class SummaryActivity extends AppCompatActivity {
             Toast.makeText(this, "Warning: Approaching monthly budget!", Toast.LENGTH_SHORT).show();
         } else {
             textRemainingBudget.setTextColor(Color.BLACK);
+        }
+    }
+
+    private void updateHighestCategory(String start, String end) {
+        ExpenseCategory highestCategory = null;
+        double maxTotal = 0;
+
+        for (ExpenseCategory cat : ExpenseCategory.values()) {
+            double total = expenseDao.getTotalByCategory(cat, start, end);
+            if (total > maxTotal) {
+                maxTotal = total;
+                highestCategory = cat;
+            }
+        }
+
+        if (highestCategory != null && maxTotal > 0) {
+            textHighestCategory.setText("Highest Spending Category: "
+                    + highestCategory.name()
+                    + " ($" + String.format(Locale.getDefault(), "%.2f", maxTotal) + ")");
+            textHighestCategory.setVisibility(View.VISIBLE);
+        } else {
+            textHighestCategory.setText("Highest Spending Category: None");
+            textHighestCategory.setVisibility(View.GONE);
         }
     }
 

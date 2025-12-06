@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonPrevDay;
     private Button buttonNextDay;
 
+    private ImageView badgeToday, badgeYesterday, badgeTwoDaysAgo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         listTransactions = findViewById(R.id.listTransactions);
         buttonPrevDay = findViewById(R.id.buttonPrevDay);
         buttonNextDay = findViewById(R.id.buttonNextDay);
+        badgeToday = findViewById(R.id.badgeToday);
+        badgeYesterday = findViewById(R.id.badgeYesterday);
+        badgeTwoDaysAgo = findViewById(R.id.badgeTwoDaysAgo);
+
+
 
         listTransactions.setOnItemClickListener((parent, view, position, id) -> {
             if (expenses == null || position < 0 || position >= expenses.size()) {
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             String line = e.title + " - $" +
                     String.format(Locale.getDefault(), "%.2f", e.amount) +
                     " (" + e.category.name() + ")";
+
             transactionStrings.add(line);
         }
 
@@ -144,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 transactionStrings
         );
         listTransactions.setAdapter(adapter);
+        updateBadges();
     }
 
 
@@ -266,6 +276,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         builder.create().show();
+    }
+
+    private void updateBadges() {
+        double todayTotal = expenseDao.getTotalForDay(getSelectedDateString());
+
+        if (todayTotal > 50) {
+            badgeToday.setImageResource(R.drawable.unlocked);
+        } else {
+            badgeToday.setImageResource(R.drawable.locked);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        double yesterdayTotal = expenseDao.getTotalForDay(sdf.format(cal.getTime()));
+
+        if (yesterdayTotal > 50) {
+            badgeYesterday.setImageResource(R.drawable.unlocked);
+        } else {
+            badgeYesterday.setImageResource(R.drawable.locked);
+        }
+
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        double twoDaysAgoTotal = expenseDao.getTotalForDay(sdf.format(cal.getTime()));
+
+        if (twoDaysAgoTotal > 50) {
+            badgeTwoDaysAgo.setImageResource(R.drawable.unlocked);
+        } else {
+            badgeTwoDaysAgo.setImageResource(R.drawable.locked);
+        }
     }
 
 }
