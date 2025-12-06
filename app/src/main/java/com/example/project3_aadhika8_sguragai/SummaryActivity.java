@@ -4,13 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +44,8 @@ public class SummaryActivity extends AppCompatActivity {
     private Button buttonExportCSV;
     private Button buttonViewCSV;
     private TextView textTotalRange;
-
+    private TextView textRemainingBudget;
+    private SharedPreferences prefs;
     private LinearLayout layoutSearch;
     private EditText editSearch;
     private Button buttonSearch;
@@ -56,6 +62,7 @@ public class SummaryActivity extends AppCompatActivity {
 
     private Calendar fromCal;
     private Calendar toCal;
+    private Spinner spinnerSort;
 
     private SimpleDateFormat buttonFormat;
     private SimpleDateFormat queryFormat;
@@ -90,6 +97,20 @@ public class SummaryActivity extends AppCompatActivity {
 
         listSummary = findViewById(R.id.listSummary);
         listExpenses = findViewById(R.id.listExpenses);
+
+        textRemainingBudget = findViewById(R.id.textRemainingBudget);
+        prefs = getSharedPreferences("BudgetPrefs", MODE_PRIVATE);
+
+        spinnerSort = findViewById(R.id.spinnerSort);
+        spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                loadExpensesForCurrentRange();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
 
         listSummary.setOnItemClickListener((parent, view, position, id) -> {
             ExpenseCategory[] cats = ExpenseCategory.values();
@@ -402,4 +423,25 @@ public class SummaryActivity extends AppCompatActivity {
             loadExpensesForCurrentRange();
         }
     }
+    private void updateBudgetWarning() {
+        float budget = prefs.getFloat("monthly_budget", 0);
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.DAY_OF_MONTH, 1); // first day of current month
+        String monthStart = queryFormat.format(now.getTime());
+        now.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH)); // last day
+        String monthEnd = queryFormat.format(now.getTime());
+
+        double totalThisMonth = expenseDao.getTotalForRange(monthStart, monthEnd);
+        double remaining = budget - totalThisMonth;
+
+        textRemainingBudget.setText("Remaining Budget: $" + String.format(Locale.getDefault(), "%.2f", remaining));
+
+        if(totalThisMonth >= 0.9 * budget) {
+            textRemainingBudget.setTextColor(Color.RED);
+            Toast.makeText(this, "Warning: Approaching monthly budget!", Toast.LENGTH_SHORT).show();
+        } else {
+            textRemainingBudget.setTextColor(Color.BLACK);
+        }
+    }
+
 }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">project3_aadhika8_sguragai</string>
+    <string-array name="sort_options">
+        <item>Date</item>
+        <item>Amount</item>
+        <item>Category</item>
+    </string-array>
 </resources>

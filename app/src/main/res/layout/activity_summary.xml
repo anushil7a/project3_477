@@ -79,6 +79,17 @@
         android:textStyle="bold"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/textRemainingBudget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Remaining Budget: $0.00"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:visibility="gone"/>
+
+
     <Button
         android:id="@+id/buttonShowSummary"
         android:layout_width="match_parent"
@@ -122,6 +133,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:visibility="gone" />
+    <Spinner
+        android:id="@+id/spinnerSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:entries="@array/sort_options"
+        android:visibility="gone"/>
 
     <ListView
         android:id="@+id/listExpenses"
