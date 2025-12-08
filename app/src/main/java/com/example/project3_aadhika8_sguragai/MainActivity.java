@@ -113,6 +113,13 @@ public class MainActivity extends AppCompatActivity {
         buttonAddExpense.setOnClickListener(v -> showExpensePopup(null));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload data (including monthly budget) when returning from other screens
+        loadDataForSelectedDate();
+    }
+
     private void showDatePicker() {
         int y = calendar.get(Calendar.YEAR);
         int m = calendar.get(Calendar.MONTH);
@@ -293,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateBadges() {
-        // Use the currently selected date, not "today", and only show a single badge.
         String selectedDay = getSelectedDateString();
         double totalForSelectedDay = expenseDao.getTotalForDay(selectedDay);
 
@@ -301,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
                 totalForSelectedDay == 0 ? R.drawable.unlocked : R.drawable.locked
         );
 
-        // Hide the extra badge icons so only one badge/lock is shown on the home screen.
         badgeYesterday.setVisibility(View.GONE);
         badgeTwoDaysAgo.setVisibility(View.GONE);
     }
