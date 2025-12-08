@@ -33,6 +33,12 @@
         android:textSize="18sp"
         android:layout_marginTop="8dp" />
 
+    <Spinner
+        android:id="@+id/spinnerCategorySort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" />
+
     <ListView
         android:id="@+id/listCategoryExpenses"
         android:layout_width="match_parent"

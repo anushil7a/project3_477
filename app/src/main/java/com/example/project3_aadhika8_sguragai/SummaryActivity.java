@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -45,7 +44,6 @@ public class SummaryActivity extends AppCompatActivity {
     private Button buttonViewCSV;
     private TextView textTotalRange;
     private TextView textRemainingBudget;
-    private SharedPreferences prefs;
     private TextView textHighestCategory;
     private LinearLayout layoutSearch;
     private EditText editSearch;
@@ -66,6 +64,7 @@ public class SummaryActivity extends AppCompatActivity {
     private Calendar fromCal;
     private Calendar toCal;
     private Spinner spinnerSort;
+    private BudgetDao budgetDao;
 
     private SimpleDateFormat buttonFormat;
     private SimpleDateFormat queryFormat;
@@ -80,6 +79,7 @@ public class SummaryActivity extends AppCompatActivity {
 
         db = AppDatabase.getInstance(getApplicationContext());
         expenseDao = db.expenseDao();
+        budgetDao = db.budgetDao();
 
         buttonBack = findViewById(R.id.buttonBack);
         buttonFromDate = findViewById(R.id.buttonFromDate);
@@ -106,7 +106,6 @@ public class SummaryActivity extends AppCompatActivity {
 
         textRemainingBudget = findViewById(R.id.textRemainingBudget);
         textHighestCategory = findViewById(R.id.textHighestCategory);
-        prefs = getSharedPreferences("BudgetPrefs", MODE_PRIVATE);
 
         spinnerSort = findViewById(R.id.spinnerSort);
         spinnerSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -147,10 +146,10 @@ public class SummaryActivity extends AppCompatActivity {
             }
 
             try {
-                float budget = Float.parseFloat(input);
-                prefs.edit().putFloat("monthly_budget", budget).apply();
+                double budget = Double.parseDouble(input);
+                saveMonthlyBudget(budget);
                 Toast.makeText(SummaryActivity.this, "Monthly budget set to $" + String.format(Locale.getDefault(), "%.2f", budget), Toast.LENGTH_SHORT).show();
-                updateBudgetWarning(); // update remaining budget immediately
+                updateBudgetWarning();
             } catch (NumberFormatException e) {
                 Toast.makeText(SummaryActivity.this, "Invalid number format", Toast.LENGTH_SHORT).show();
             }
@@ -284,11 +283,13 @@ public class SummaryActivity extends AppCompatActivity {
         if (isExpensesVisible) {
             listExpenses.setVisibility(android.view.View.GONE);
             layoutSearch.setVisibility(android.view.View.GONE);
+            spinnerSort.setVisibility(android.view.View.GONE);
             isExpensesVisible = false;
         } else {
             loadExpensesForCurrentRange();
             listExpenses.setVisibility(android.view.View.VISIBLE);
             layoutSearch.setVisibility(android.view.View.VISIBLE);
+            spinnerSort.setVisibility(android.view.View.VISIBLE);
             isExpensesVisible = true;
         }
     }
@@ -347,13 +348,18 @@ public class SummaryActivity extends AppCompatActivity {
 
         expensesInRange = expenseDao.getExpensesInRange(start, end);
 
-        String sortChoice = spinnerSort.getSelectedItem().toString();
-
-        if (sortChoice.equals("Date")) {
-            expensesInRange.sort((a, b) -> a.date.compareTo(b.date));
-        } else if (sortChoice.equals("Amount")) {
+        int sortPos = spinnerSort.getSelectedItemPosition();
+        if (sortPos == 0) {
+            // Date (Newest First)
+            expensesInRange.sort((a, b) -> b.date.compareTo(a.date));
+        } else if (sortPos == 1) {
+            // Amount (High to Low)
+            expensesInRange.sort((a, b) -> Double.compare(b.amount, a.amount));
+        } else if (sortPos == 2) {
+            // Amount (Low to High)
             expensesInRange.sort((a, b) -> Double.compare(a.amount, b.amount));
-        } else if (sortChoice.equals("Category")) {
+        } else if (sortPos == 3) {
+            // Category
             expensesInRange.sort((a, b) -> {
                 String c1 = (a.category == null ? "" : a.category.name());
                 String c2 = (b.category == null ? "" : b.category.name());
@@ -467,11 +473,11 @@ public class SummaryActivity extends AppCompatActivity {
         updateBudgetWarning();
     }
     private void updateBudgetWarning() {
-        float budget = prefs.getFloat("monthly_budget", 0);
+        double budget = getMonthlyBudget();
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.DAY_OF_MONTH, 1); // first day of current month
+        now.set(Calendar.DAY_OF_MONTH, 1);
         String monthStart = queryFormat.format(now.getTime());
-        now.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH)); // last day
+        now.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH));
         String monthEnd = queryFormat.format(now.getTime());
 
         double totalThisMonth = expenseDao.getTotalForRange(monthStart, monthEnd);
@@ -479,12 +485,30 @@ public class SummaryActivity extends AppCompatActivity {
 
         textRemainingBudget.setText("Remaining Budget: $" + String.format(Locale.getDefault(), "%.2f", remaining));
 
-        if(totalThisMonth >= 0.9 * budget) {
+        if (totalThisMonth > budget) {
             textRemainingBudget.setTextColor(Color.RED);
-            Toast.makeText(this, "Warning: Approaching monthly budget!", Toast.LENGTH_SHORT).show();
+        } else if (remaining <= 200) {
+            textRemainingBudget.setTextColor(Color.parseColor("#FFA500"));
         } else {
             textRemainingBudget.setTextColor(Color.BLACK);
         }
+    }
+
+    private double getMonthlyBudget() {
+        Double amount = budgetDao.getBudget();
+        if (amount == null) {
+            Budget b = new Budget();
+            b.amount = 1500.0;
+            budgetDao.insert(b);
+            return 1500.0;
+        }
+        return amount;
+    }
+
+    private void saveMonthlyBudget(double amount) {
+        Budget b = new Budget();
+        b.amount = amount;
+        budgetDao.insert(b);
     }
 
     private void updateHighestCategory(String start, String end) {

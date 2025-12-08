@@ -27,6 +27,10 @@ import android.content.DialogInterface;
 public class MainActivity extends AppCompatActivity {
 
     private TextView textTotalAmount;
+    private TextView textMonthlyBudgetHome;
+    private TextView textBudgetWarningHome;
+    private TextView textBadgesThisMonth;
+    private TextView textStreakStatus;
     private Button buttonSelectDate;
     private Button buttonViewSummary;
     private Button buttonAddExpense;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private Calendar calendar;
     private AppDatabase db;
     private ExpenseDao expenseDao;
+    private BudgetDao budgetDao;
 
     private ArrayList<String> transactionStrings;
     private ArrayAdapter<String> adapter;
@@ -43,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonNextDay;
 
     private ImageView badgeToday, badgeYesterday, badgeTwoDaysAgo;
+    private ImageView imageStreakBadge;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textTotalAmount = findViewById(R.id.textTotalAmount);
+        textMonthlyBudgetHome = findViewById(R.id.textMonthlyBudgetHome);
+        textBudgetWarningHome = findViewById(R.id.textBudgetWarningHome);
+        textBadgesThisMonth = findViewById(R.id.textBadgesThisMonth);
+        textStreakStatus = findViewById(R.id.textStreakStatus);
         buttonSelectDate = findViewById(R.id.buttonSelectDate);
         buttonViewSummary = findViewById(R.id.buttonViewSummary);
         buttonAddExpense = findViewById(R.id.buttonAddExpense);
@@ -59,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         badgeToday = findViewById(R.id.badgeToday);
         badgeYesterday = findViewById(R.id.badgeYesterday);
         badgeTwoDaysAgo = findViewById(R.id.badgeTwoDaysAgo);
+        imageStreakBadge = findViewById(R.id.imageStreakBadge);
 
 
         listTransactions.setOnItemClickListener((parent, view, position, id) -> {
@@ -73,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         db = AppDatabase.getInstance(getApplicationContext());
         expenseDao = db.expenseDao();
+        budgetDao = db.budgetDao();
 
         updateDateButtonText();
         loadDataForSelectedDate();
@@ -153,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
         );
         listTransactions.setAdapter(adapter);
         updateBadges();
+        updateMonthlyBudgetStatus();
+        updateMonthlyBadgeCount();
+        updateStreakStatus();
     }
 
 
@@ -278,32 +293,162 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateBadges() {
-        double todayTotal = expenseDao.getTotalForDay(getSelectedDateString());
+        // Use the currently selected date, not "today", and only show a single badge.
+        String selectedDay = getSelectedDateString();
+        double totalForSelectedDay = expenseDao.getTotalForDay(selectedDay);
 
-        if (todayTotal > 50) {
-            badgeToday.setImageResource(R.drawable.unlocked);
-        } else {
-            badgeToday.setImageResource(R.drawable.locked);
+        badgeToday.setImageResource(
+                totalForSelectedDay == 0 ? R.drawable.unlocked : R.drawable.locked
+        );
+
+        // Hide the extra badge icons so only one badge/lock is shown on the home screen.
+        badgeYesterday.setVisibility(View.GONE);
+        badgeTwoDaysAgo.setVisibility(View.GONE);
+    }
+
+    private double getMonthlyBudget() {
+        Double amount = budgetDao.getBudget();
+        if (amount == null) {
+            Budget b = new Budget();
+            b.amount = 1500.0;
+            budgetDao.insert(b);
+            return 1500.0;
         }
+        return amount;
+    }
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, -1);
+    private void updateMonthlyBudgetStatus() {
+        double budget = getMonthlyBudget();
+
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.DAY_OF_MONTH, 1);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        double yesterdayTotal = expenseDao.getTotalForDay(sdf.format(cal.getTime()));
+        String monthStart = sdf.format(now.getTime());
+        now.set(Calendar.DAY_OF_MONTH, now.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String monthEnd = sdf.format(now.getTime());
 
-        if (yesterdayTotal > 50) {
-            badgeYesterday.setImageResource(R.drawable.unlocked);
+        double totalThisMonth = expenseDao.getTotalForRange(monthStart, monthEnd);
+        double remaining = budget - totalThisMonth;
+
+        textMonthlyBudgetHome.setText(
+                "Monthly budget: $" + String.format(Locale.getDefault(), "%.2f", budget) +
+                        "   Remaining: $" + String.format(Locale.getDefault(), "%.2f", remaining)
+        );
+
+        if (totalThisMonth > budget) {
+            textBudgetWarningHome.setText("Above monthly budget!");
+            textBudgetWarningHome.setBackgroundColor(0xFFFF0000);
+            textBudgetWarningHome.setVisibility(View.VISIBLE);
+        } else if (remaining <= 200) {
+            textBudgetWarningHome.setText("Within $200 of monthly budget");
+            textBudgetWarningHome.setBackgroundColor(0xFFFFA500);
+            textBudgetWarningHome.setVisibility(View.VISIBLE);
         } else {
-            badgeYesterday.setImageResource(R.drawable.locked);
+            textBudgetWarningHome.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateMonthlyBadgeCount() {
+        Calendar now = Calendar.getInstance();
+        int currentYear = now.get(Calendar.YEAR);
+        int currentMonth = now.get(Calendar.MONTH);
+
+        Calendar cursor = Calendar.getInstance();
+        cursor.set(Calendar.YEAR, currentYear);
+        cursor.set(Calendar.MONTH, currentMonth);
+        cursor.set(Calendar.DAY_OF_MONTH, 1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        int badges = 0;
+
+        while (!cursor.after(now)) {
+            String dayStr = sdf.format(cursor.getTime());
+            double total = expenseDao.getTotalForDay(dayStr);
+            if (total == 0) {
+                badges++;
+            }
+            cursor.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        cal.add(Calendar.DAY_OF_MONTH, -1);
-        double twoDaysAgoTotal = expenseDao.getTotalForDay(sdf.format(cal.getTime()));
+        textBadgesThisMonth.setText(
+                "No-spend badges this month: " + badges
+        );
+    }
 
-        if (twoDaysAgoTotal > 50) {
-            badgeTwoDaysAgo.setImageResource(R.drawable.unlocked);
+    private void updateStreakStatus() {
+        // Base the streak on the currently selected date, so viewing the past
+        // (e.g., Oct 14) shows the streak up to that day.
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar base = Calendar.getInstance();
+        try {
+            base.setTime(sdf.parse(getSelectedDateString()));
+        } catch (Exception ignored) { }
+
+        Calendar cursor = (Calendar) base.clone();
+
+        int streak = 0;
+        int maxDaysLookback = 365; // safety cap to avoid ANRs
+        while (maxDaysLookback-- > 0) {
+            String dayStr = sdf.format(cursor.getTime());
+            double total = expenseDao.getTotalForDay(dayStr);
+            if (total == 0) {
+                streak++;
+            } else {
+                break;
+            }
+            cursor.add(Calendar.DAY_OF_MONTH, -1);
+        }
+
+        if (streak <= 0) {
+            textStreakStatus.setVisibility(View.GONE);
+            imageStreakBadge.setVisibility(View.GONE);
+            return;
+        }
+
+        String badgeLabel = "";
+        int bgColor = 0xFF228B22; // default green
+
+        if (streak >= 30) {
+            badgeLabel = "Gold badge";
+            bgColor = 0xFFFFD700; // gold
+        } else if (streak >= 7) {
+            badgeLabel = "Silver badge";
+            bgColor = 0xFFC0C0C0; // silver
+        } else if (streak >= 3) {
+            badgeLabel = "Bronze badge";
+            bgColor = 0xFFCD7F32; // bronze
+        }
+
+        // Monthly badge: perfect no-spend streak for all days so far in this month
+        int daysElapsed = base.get(Calendar.DAY_OF_MONTH);
+        boolean monthlyPerfect = streak >= daysElapsed;
+
+        String text = "No-spend streak: " + streak + " days";
+        int badgeResId = 0;
+        if (streak >= 30) {
+            badgeResId = R.drawable.gold;
+        } else if (streak >= 7) {
+            badgeResId = R.drawable.silver;
+        } else if (streak >= 3) {
+            badgeResId = R.drawable.bronze;
+        }
+
+        if (!badgeLabel.isEmpty()) {
+            text += " (" + badgeLabel + ")";
+        }
+        if (monthlyPerfect) {
+            text += " - Monthly streak!";
+        }
+
+        textStreakStatus.setText(text);
+        textStreakStatus.setBackgroundColor(bgColor);
+        textStreakStatus.setVisibility(View.VISIBLE);
+
+        if (badgeResId != 0) {
+            imageStreakBadge.setImageResource(badgeResId);
+            imageStreakBadge.setVisibility(View.VISIBLE);
         } else {
-            badgeTwoDaysAgo.setImageResource(R.drawable.locked);
+            imageStreakBadge.setVisibility(View.GONE);
         }
     }
 

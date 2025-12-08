@@ -37,6 +37,57 @@
         android:textColor="#228B22"
         android:layout_marginBottom="12dp" />
 
+    <TextView
+        android:id="@+id/textMonthlyBudgetHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Monthly budget: $1500.00   Remaining: $1500.00"
+        android:textSize="16sp"
+        android:textColor="#083A08"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/textBudgetWarningHome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF0000"
+        android:textColor="#FFFFFF"
+        android:text="Above monthly budget!"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/textBadgesThisMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No-spend badges this month: 0"
+        android:textSize="16sp"
+        android:textColor="#083A08"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/textStreakStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No-spend streak: 0 days"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="#228B22"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp" />
+
+    <ImageView
+        android:id="@+id/imageStreakBadge"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp" />
+
     <LinearLayout
         android:id="@+id/layoutBadges"
         android:layout_width="match_parent"

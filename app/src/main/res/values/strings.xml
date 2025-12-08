@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">project3_aadhika8_sguragai</string>
     <string-array name="sort_options">
-        <item>Date</item>
-        <item>Amount</item>
+        <item>Date (Newest First)</item>
+        <item>Amount (High to Low)</item>
+        <item>Amount (Low to High)</item>
         <item>Category</item>
     </string-array>
 </resources>

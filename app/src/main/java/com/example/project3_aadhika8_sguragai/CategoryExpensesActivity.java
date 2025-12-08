@@ -3,9 +3,12 @@ package com.example.project3_aadhika8_sguragai;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +28,11 @@ public class CategoryExpensesActivity extends AppCompatActivity {
     private TextView textTitle;
     private Button buttonBack;
     private ListView listCategoryExpenses;
+    private Spinner spinnerCategorySort;
 
     private ArrayAdapter<String> adapter;
     private ArrayList<String> lines;
+    private List<Expense> catExpenses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,7 @@ public class CategoryExpensesActivity extends AppCompatActivity {
         textTitle = findViewById(R.id.textCategoryTitle);
         buttonBack = findViewById(R.id.buttonBackFromCategory);
         listCategoryExpenses = findViewById(R.id.listCategoryExpenses);
+        spinnerCategorySort = findViewById(R.id.spinnerCategorySort);
 
         db = AppDatabase.getInstance(getApplicationContext());
         expenseDao = db.expenseDao();
@@ -62,20 +68,55 @@ public class CategoryExpensesActivity extends AppCompatActivity {
 
         textTitle.setText(cat.name() + " (" + start + " to " + end + ")");
 
+        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"Date (Newest First)", "Amount (High to Low)", "Amount (Low to High)"}
+        );
+        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategorySort.setAdapter(sortAdapter);
+
+        spinnerCategorySort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applySortAndDisplay();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
         loadCategoryExpenses(cat, start, end);
 
         buttonBack.setOnClickListener(v -> finish());
     }
 
     private void loadCategoryExpenses(ExpenseCategory cat, String start, String end) {
-        List<Expense> catExpenses = expenseDao.getExpensesByCategory(cat, start, end);
+        catExpenses = expenseDao.getExpensesByCategory(cat, start, end);
+        applySortAndDisplay();
+    }
 
+    private void applySortAndDisplay() {
         lines = new ArrayList<>();
 
         if (catExpenses == null || catExpenses.isEmpty()) {
             lines.add("No expenses found for this category in this range.");
         } else {
-            for (Expense e : catExpenses) {
+            List<Expense> sorted = new ArrayList<>(catExpenses);
+            int pos = spinnerCategorySort.getSelectedItemPosition();
+
+            if (pos == 0) {
+                // Date (Newest First)
+                sorted.sort((a, b) -> b.date.compareTo(a.date));
+            } else if (pos == 1) {
+                // Amount (High to Low)
+                sorted.sort((a, b) -> Double.compare(b.amount, a.amount));
+            } else if (pos == 2) {
+                // Amount (Low to High)
+                sorted.sort((a, b) -> Double.compare(a.amount, b.amount));
+            }
+
+            for (Expense e : sorted) {
                 String title = e.title == null ? "" : e.title;
                 String note = e.note == null ? "" : e.note;
                 String line = e.date + " - " +
